@@ -16,6 +16,7 @@ jobs:
           userId: 2365872
           leaderboardId: 2365872
           sessionCookie: ${{ secrets.AOC_SESSION }}
+          year: 2019
       - uses: stefanzweifel/git-auto-commit-action@v5 # use v5
         with:
           commit_message: Update README stars
