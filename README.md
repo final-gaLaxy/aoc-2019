@@ -7,4 +7,5 @@ Learning [Rust](https://www.rust-lang.org/) with [Advent of Code](https://advent
 
 | Day | Part 1 | Part 2 |
 | :---: | :---: | :---: |
+| [Day 1](https://adventofcode.com/2019/day/1) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
