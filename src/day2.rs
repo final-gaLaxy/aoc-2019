@@ -31,7 +31,40 @@ pub fn solve_part1(input: &Vec<usize>) -> String {
         }
     }
 
-    format!("{:?}", p)
+    format!("{:?}", p[0])
+}
+
+#[aoc(day2, part2)]
+pub fn solve_part2(input: &Vec<usize>) -> i32 {
+    for noun in 0..=99 {
+        for verb in 0..=99 {
+            let mut p = input.clone();
+
+            // update input
+            p[1] = noun; p[2] = verb;
+
+            let r = std::ops::Range {start: 0, end: p.len()}
+                .step_by(4);
+            for i in r {
+                match p[i] {
+                    99 => break,
+                    1 => {
+                        let (a, b, c) = (p[i+1], p[i+2], p[i+3]);
+                        p[c] = p[a] + p[b];
+                    },
+                    2 => {
+                        let (a, b, c) = (p[i+1], p[i+2], p[i+3]);
+                        p[c] = p[a] * p[b];
+                    },
+                    _ => {}
+                }
+            }
+            if p[0] == 19690720 {
+                return (100 * noun + verb) as i32;
+            }
+        }
+    }
+    -1
 }
 
 #[cfg(test)]
