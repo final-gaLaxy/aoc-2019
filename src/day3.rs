@@ -82,6 +82,7 @@ pub fn solve_part2(input: &[Vec<(char, i32)>;2]) -> i32 {
         )
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
