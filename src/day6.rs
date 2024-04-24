@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-#[aoc_generator(day6, part1)]
+#[aoc_generator(day6)]
 pub fn input_generator(input: &str) -> HashMap<String, String> {
     input
         .trim()
@@ -50,8 +50,33 @@ pub fn solve_part1(input: &HashMap<String, String>) -> i32 {
 }
 
 #[aoc(day6, part2)]
-pub fn solve_part2(input: &str) -> i32 {
-    0
+pub fn solve_part2(input: &HashMap<String, String>) -> i32 {
+    let satellites: HashMap<String, String> = input.clone();
+    let mut orbits: HashMap<String, i32> = HashMap::new();
+    orbits.insert(String::from("COM"), 0);
+
+    for k in satellites.keys() {
+        solve(k, &satellites, &mut orbits);
+    }
+
+    let mut l: &String = &satellites
+        .get(&String::from("YOU"))
+        .unwrap();
+    let mut r: &String = &satellites
+        .get(&String::from("SAN"))
+        .unwrap();
+    let mut steps = 0;
+    while l != r {
+        if orbits.get(l).unwrap() < orbits.get(r).unwrap() {
+            r = satellites.get(r).unwrap();
+        } else {
+            l = satellites.get(l).unwrap();
+        }
+
+        steps += 1
+    }
+
+    steps
 }
 
 #[cfg(test)]
@@ -64,6 +89,15 @@ mod tests {
         assert_eq!(
             solve_part1(&input_generator("COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L")),
             42
+        );
+    }
+
+    // Part 2
+    #[test]
+    fn example2() {
+        assert_eq!(
+            solve_part2(&input_generator("COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L\nK)YOU\nI)SAN")),
+            4
         );
     }
 }
