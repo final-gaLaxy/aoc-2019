@@ -69,7 +69,7 @@ pub fn solve_part2(input: &str) -> String {
 
     image
         .iter()
-        .map(|&n| char::from_digit(n as u32, 10).unwrap())
+        .map(|&n| if n == 1 { '#' } else { '.' })
         .enumerate()
         .flat_map(|(i, c)| {
             if i % 25 == 0 {
