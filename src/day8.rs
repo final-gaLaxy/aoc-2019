@@ -41,8 +41,46 @@ fn to_layers(input: &str, width: i32, height: i32) -> Vec<Vec<Vec<i32>>> {
 }
 
 #[aoc(day8, part2)]
-pub fn solve_part2(_input: &str) -> Option<i32> {
-    None
+pub fn solve_part2(input: &str) -> String {
+    let image = to_layers(input, 25, 6)
+        .iter()
+        .fold(vec![], |img: Vec<i32>, layer| {
+            let flat = layer
+                .iter()
+                .flatten()
+                .map(|&x| x);
+
+            if img.len() == 0 {
+                flat
+                    .collect_vec()
+            } else {
+                flat
+                    .zip(img)
+                    .map(|(p_layer, p_image)| {
+                        if p_image == 2 {
+                            p_layer
+                        } else {
+                            p_image
+                        }
+                    })
+                    .collect_vec()
+            }
+        });
+
+    image
+        .iter()
+        .map(|&n| char::from_digit(n as u32, 10).unwrap())
+        .enumerate()
+        .flat_map(|(i, c)| {
+            if i % 25 == 0 {
+                Some('\n')
+            } else {
+                None
+            }
+            .into_iter()
+            .chain(std::iter::once(c))
+        })
+        .collect::<String>()
 }
 
 #[cfg(test)]
@@ -66,5 +104,36 @@ mod tests {
             .unwrap();
 
         assert_eq!(layer_check, vec![1,2,3,4,5,6]);
+    }
+
+    #[test]
+    fn example2() {
+        let image = to_layers("0222112222120000", 2, 2)
+            .iter()
+            .fold(vec![], |img: Vec<i32>, layer| {
+                let flat = layer
+                    .iter()
+                    .flatten()
+                    .map(|&x| x);
+
+                if img.len() == 0 {
+                    flat
+                        .collect_vec()
+                } else {
+                    flat
+                        .zip(img)
+                        .map(|(p_layer, p_image)| {
+                            if p_image == 2 {
+                                p_layer
+                            } else {
+                                p_image
+                            }
+                        })
+                        .collect_vec()
+                }
+
+            });
+
+        assert_eq!(image.iter().map(|n| n.to_string()).join(""), "0110");
     }
 }
