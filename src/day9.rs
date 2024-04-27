@@ -16,8 +16,9 @@ pub fn solve_part1(int_code: &Vec<i64>) -> i64 {
 }
 
 #[aoc(day9, part2)]
-pub fn solve_part2(_input: &Vec<i64>) -> i64 {
-    0
+pub fn solve_part2(int_code: &Vec<i64>) -> i64 {
+    let mut runner = IntcodeRunner::new(int_code);
+    runner.solve_with_inputs(VecDeque::from([2]))[0]
 }
 
 struct IntcodeRunner {
