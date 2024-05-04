@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{BTreeMap, VecDeque};
 
 #[aoc_generator(day11)]
 pub fn input_generator(input: &str) -> Vec<i64> {
@@ -11,32 +11,118 @@ pub fn input_generator(input: &str) -> Vec<i64> {
 
 #[aoc(day11, part1)]
 pub fn solve_part1(int_code: &Vec<i64>) -> usize {
-    let dirs = [(0,1), (1,0), (0,-1), (-1,0)];
-    let mut painted: HashSet<(i64, i64)> = HashSet::new();
-    let mut is_white: HashSet<(i64, i64)> = HashSet::new();
-    let mut dir = 0;
-    let mut pos: (i64, i64) = (0, 0);
-    let mut runner = IntcodeRunner::new(int_code);
-    while let Some(colour) = runner.next_output( if is_white.contains(&pos) { Some(1) } else { Some(0) }) {
-        if colour == 1 {
-            is_white.insert(pos);
-        } else {
-            is_white.remove(&pos);
-        }
-        painted.insert(pos);
+    let mut robot: PaintingRobot = PaintingRobot::new(IntcodeRunner::new(int_code));
+    robot.run();
 
-        let turn_right = runner.next_output(None).unwrap();
-
-        dir = (turn_right*2-1 + dir).rem_euclid(dirs.len() as i64);
-        pos = (pos.0 + dirs[dir as usize].0, pos.1 + dirs[dir as usize].1);
-    }
-
-    painted.len()
+    robot.panel.len()
 }
 
 #[aoc(day11, part2)]
 pub fn solve_part2(_input: &Vec<i64>) -> i32 {
     0
+}
+
+#[derive(Clone, Copy)]
+enum Colour {
+    Black,
+    White,
+}
+
+#[derive(Clone, Copy)]
+enum Direction {
+    Left,
+    Right,
+    Up,
+    Down,
+}
+
+impl Direction {
+    fn turn_left(&self) -> Direction {
+        match self {
+            Direction::Left => Direction::Down,
+            Direction::Right => Direction::Up,
+            Direction::Up => Direction::Left,
+            Direction::Down => Direction::Right,
+        }
+    }
+
+    fn turn_right(&self) -> Direction {
+        match self {
+            Direction::Left => Direction::Up,
+            Direction::Right => Direction::Down,
+            Direction::Up => Direction::Right,
+            Direction::Down => Direction::Left,
+        }
+    }
+}
+
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+struct Position {
+    x: i64,
+    y: i64,
+}
+
+impl Position {
+    fn new(x: i64, y: i64) -> Position {
+        Position { x: x, y: y }
+    }
+
+    fn walk(&mut self, dir: Direction){
+        match dir {
+            Direction::Left => self.x -= 1,
+            Direction::Right => self.x += 1,
+            Direction::Up => self.y += 1,
+            Direction::Down => self.y -= 1,
+        };
+    }
+}
+
+struct PaintingRobot {
+    panel: BTreeMap<Position, Colour>,
+    dir: Direction,
+    pos: Position,
+    runner: IntcodeRunner,
+}
+
+impl PaintingRobot {
+    fn new(runner: IntcodeRunner) -> PaintingRobot {
+        PaintingRobot {
+            panel: BTreeMap::new(),
+            dir: Direction::Up,
+            pos: Position::new(0,0),
+            runner: runner,
+        }
+    }
+
+    fn run(&mut self) {
+        while let Some(colour) = self.output(self.input()) {
+            self.panel.insert(self.pos, colour);
+
+            self.dir = match self.runner.next_output(None) {
+                Some(0) => self.dir.turn_left(),
+                Some(1) => self.dir.turn_right(),
+                _ => panic!("Unknown Direction!")
+            };
+
+            self.pos.walk(self.dir);
+        }
+    }
+
+    fn input(&self) -> i64 {
+        match self.panel.get(&self.pos).unwrap_or(&Colour::Black) {
+            Colour::Black => 0,
+            Colour::White => 1,
+        }
+    }
+
+    fn output(&mut self, v: i64) -> Option<Colour> {
+        match self.runner.next_output(Some(v)) {
+            Some(0) => Some(Colour::Black),
+            Some(1) => Some(Colour::White),
+            None => None,
+            _ => panic!("Unkown Colour Output!")
+        }
+    }
 }
 
 struct IntcodeRunner {
