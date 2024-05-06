@@ -18,8 +18,38 @@ pub fn solve_part1(int_code: &Vec<i64>) -> usize {
 }
 
 #[aoc(day11, part2)]
-pub fn solve_part2(_input: &Vec<i64>) -> i32 {
-    0
+pub fn solve_part2(int_code: &Vec<i64>) -> String {
+    let mut robot: PaintingRobot = PaintingRobot::new(IntcodeRunner::new(int_code));
+    robot.panel.insert(robot.pos, Colour::White);
+    robot.run();
+
+    let panel = robot.panel;
+
+    let mut top_left = Position::new(0, 0);
+    let mut bottom_right = Position::new(0, 0);
+
+    for coord in panel.keys() {
+        top_left.x = i64::min(top_left.x, coord.x);
+        top_left.y = i64::min(top_left.y, coord.y);
+
+        bottom_right.x = i64::max(bottom_right.x, coord.x);
+        bottom_right.y = i64::max(bottom_right.y, coord.y);
+    }
+
+    let mut s: String = "\n".to_string();
+    for y in ((top_left.y)..=(bottom_right.y)).rev() {
+        for x in (top_left.x)..=(bottom_right.x) {
+            let c = match panel.get(&Position::new(x,y)) {
+                Some(Colour::Black) => '.',
+                Some(Colour::White) => '#',
+                None => '.'
+            };
+            s.push(c);
+        }
+        s.push('\n')
+    }
+
+    s
 }
 
 #[derive(Clone, Copy)]
@@ -263,9 +293,4 @@ impl IntcodeRunner {
 
         None
     }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
 }
