@@ -18,6 +18,7 @@ Learning [Rust](https://www.rust-lang.org/) with [Advent of Code](https://advent
 | [Day 9](https://adventofcode.com/2019/day/9) | ⭐ | ⭐ |
 | [Day 10](https://adventofcode.com/2019/day/10) | ⭐ | ⭐ |
 | [Day 11](https://adventofcode.com/2019/day/11) | ⭐ | ⭐ |
+| [Day 12](https://adventofcode.com/2019/day/12) | ⭐ |   |
 <!--- advent_readme_stars table --->
 
 ## Running Solutions
